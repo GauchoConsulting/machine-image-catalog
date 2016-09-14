@@ -51,8 +51,8 @@
     {
       "remote_folder": "~/",
       "scripts": [
-        "../../scripts/cleanup.sh",
-        "../../scripts/zero.sh"
+        "scripts/cleanup.sh",
+        "scripts/zero.sh"
       ],
       "type": "shell"
     }
@@ -62,7 +62,7 @@
     "disk_size": null,
     "group_id": null,
     "headless": null,
-    "http_directory": "www",
+    "http_directory": "boxes/foundation/www",
     "incremental_version": null,
     "iso_checksum": "9e0ee4c5d9d0371fa0c0809b487ee5bb",
     "iso_checksum_type": "md5",
