@@ -7,11 +7,13 @@ variable "region" {
 variable "vmie_bucket_name" {
   type        = "string"
   description = "S3 bucket to use for the VM import/export service"
+  default = "pervenche-vmie-bucket"
 }
 
 variable "vagrant_bucket_name" {
   type        = "string"
   description = "S3 bucket to upload vagrant images to"
+  default = "pervenche-vagrant-bucket"
 }
 
 provider "aws" {
@@ -30,7 +32,7 @@ resource "aws_s3_bucket" "vmie" {
 
 resource "aws_s3_bucket" "vagrant" {
   bucket        = "${var.vagrant_bucket_name}"
-  acl           = "public-read"
+  acl           = "private"
   force_destroy = true
 
   tags {

@@ -81,7 +81,7 @@
         "type": "vagrant"
       },
       {
-        "acl": "public-read",
+        "acl": "authenticated-read",
         "box_dir": "boxes",
         "box_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}",
         "bucket": "{{ user `aws_vagrant_bucket_name` }}",
@@ -110,11 +110,11 @@
     },
     [
       {
+        "ami_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
         "only": [
           "{{ user `aws_identifier` }}"
         ],
         "region": "{{ user `aws_region` }}",
-        "ami_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
         "s3_bucket_name": "{{ user `aws_vmimport_bucket_name` }}",
         "s3_key_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
         "type": "amazon-import"
@@ -169,8 +169,8 @@
     "artifact_id": null,
     "aws_identifier": "aws",
     "aws_region": "eu-west-1",
-    "aws_vagrant_bucket_name": "gaucho-vagrant-bucket",
-    "aws_vmimport_bucket_name": "gaucho-vmie-bucket",
+    "aws_vagrant_bucket_name": null,
+    "aws_vmimport_bucket_name": null,
     "disk_size": null,
     "group_id": null,
     "headless": null,

@@ -1,10 +1,12 @@
 {
   "artifact_id": "centos6-membrane",
+  "aws_vagrant_bucket_name": "pervenche-vagrant-bucket",
+  "aws_vmimport_bucket_name": "pervenche-vmie-bucket",
   "disk_size": "61440",
-  "group_id": "com.gauchoconsulting.cloud",
+  "group_id": "com.pervenche.cloud",
   "headless": "false",
   "incremental_version": "0",
   "major_version": "0",
   "minor_version": "0",
-  "patch_version": "0"
+  "patch_version": "1"
 }

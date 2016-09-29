@@ -18,6 +18,12 @@ $ mkdir -p $HOME/.packer.d/plugins
 $ cp $GOPATH/bin/packer-post-processor-vagrant-s3 $HOME/.packer.d/plugins/
 ```
 
+## Install the vagrant s3 authentication plugin:
+
+```shell
+vagrant plugin install vagrant-s3auth
+```
+
 ## Bootstrap your AWS account
 
 The built vagrant boxes are stored in an S3 bucket.
@@ -35,7 +41,7 @@ $ terraform apply
 To build the Foundation Image execute the following command from the root of the repository:
 
 ```shell
-ROOT_PASSWORD="$(openssl rand -base64 32)" BOOTLOADER_PASSWORD="$(openssl rand -base64 32)" packer build -force -var-file boxes/foundation/variables.json boxes/foundation/packer.json 
+$ ROOT_PASSWORD="$(openssl rand -base64 32)" BOOTLOADER_PASSWORD="$(openssl rand -base64 32)" packer build -force -var-file boxes/foundation/variables.json boxes/foundation/packer.json 
 ```
 
 # Building the Membrane Image
@@ -43,6 +49,11 @@ ROOT_PASSWORD="$(openssl rand -base64 32)" BOOTLOADER_PASSWORD="$(openssl rand -
 To build the membrane image execute the following commands from the root of the repository:
 
 ```shell
-cat boxes/membrane/staging-variables.json builds/com.gauchoconsulting.cloud.virtualbox.centos6-foundation/0.0.0.0/variables.json | jq add -s -r > boxes/membrane/merged-variables.json
-packer build -force -var-file boxes/membrane/merged-variables.json boxes/membrane/packer.json
+$ packer build -var-file boxes/membrane/staging-variables.json -var-file builds/com.pervenche.cloud/centos6-foundation/0.0.1.0/variables.json -force -parallel=false boxes/membrane/packer.json
+```
+
+# Importing the Vagrant Image
+
+```shell
+$ vagrant box add s3://pervenche-vagrant-bucket/com.pervenche.cloud.aws.centos6-membrane
 ```
