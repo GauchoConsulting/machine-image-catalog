@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# TODO Fix https://access.redhat.com/solutions/2333821
+
 find /root -type f -delete
 yum reinstall rootfiles -y
 
@@ -70,3 +72,4 @@ rm -f /var/lib/yum/uuid
 rm -f /var/lib/rpm/__db*
 rpm --rebuilddb
 
+rm -rf /var/lib/cloud/sem/* /var/lib/cloud/instance /var/lib/cloud/instances/*

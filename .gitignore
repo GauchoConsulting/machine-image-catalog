@@ -6,3 +6,8 @@ packer_cache/
 *.vmdk
 *.ovf
 
+builds/
+
+merged-variables.json
+
+terraform.tfstate
