@@ -3,7 +3,7 @@
     {
       "headless": "{{ user `headless` }}",
       "name": "{{ user `virtualbox_identifier` }}",
-      "output_directory": "builds/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/",
+      "output_directory": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `virtualbox_identifier` }}",
       "shutdown_command": "/sbin/halt -h -p",
       "source_path": "{{ user `virtualbox_source_package_path` }}",
       "ssh_password": "{{ user `password` }}",
@@ -35,9 +35,10 @@
       "vm_name": "{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
     },
     {
+      "format": "ova",
       "headless": "{{ user `headless` }}",
       "name": "{{ user `aws_identifier` }}",
-      "output_directory": "builds/{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/",
+      "output_directory": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `aws_identifier` }}",
       "shutdown_command": "/sbin/halt -h -p",
       "source_path": "{{ user `virtualbox_source_package_path` }}",
       "ssh_password": "{{ user `password` }}",
@@ -70,15 +71,67 @@
     }
   ],
   "post-processors": [
+    [
+      {
+        "keep_input_artifact": true,
+        "only": [
+          "{{ user `virtualbox_identifier` }}"
+        ],
+        "output": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/vagrant/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}.box",
+        "type": "vagrant"
+      },
+      {
+        "acl": "public-read",
+        "box_dir": "boxes",
+        "box_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}",
+        "bucket": "{{ user `aws_vagrant_bucket_name` }}",
+        "manifest": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}",
+        "only": [
+          "{{ user `virtualbox_identifier` }}"
+        ],
+        "region": "{{ user `aws_region` }}",
+        "type": "vagrant-s3",
+        "version": "{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+      }
+    ],
     {
-      "keep_input_artifact": true,
+      "environment_vars": [
+        "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
+        "username=vagrant",
+        "password=vagrant"
+      ],
       "only": [
         "{{ user `virtualbox_identifier` }}"
       ],
-      "output": "builds/{{ user `group_id` }}.vagrant.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}.box",
-      "type": "vagrant"
+      "scripts": [
+        "scripts/metadata-generator.sh"
+      ],
+      "type": "shell-local"
     },
-    
+    [
+      {
+        "only": [
+          "{{ user `aws_identifier` }}"
+        ],
+        "region": "{{ user `aws_region` }}",
+        "ami_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "s3_bucket_name": "{{ user `aws_vmimport_bucket_name` }}",
+        "s3_key_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "type": "amazon-import"
+      },
+      {
+        "environment_vars": [
+          "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json"
+        ],
+        "only": [
+          "{{ user `aws_identifier` }}"
+        ],
+        "scripts": [
+          "scripts/metadata-generator.sh"
+        ],
+        "type": "shell-local"
+      }
+    ]
   ],
   "provisioners": [
     {
@@ -115,7 +168,9 @@
   "variables": {
     "artifact_id": null,
     "aws_identifier": "aws",
-    "aws_vmimport_bucket_name": "gaucho-image-bucket",
+    "aws_region": "eu-west-1",
+    "aws_vagrant_bucket_name": "gaucho-vagrant-bucket",
+    "aws_vmimport_bucket_name": "gaucho-vmie-bucket",
     "disk_size": null,
     "group_id": null,
     "headless": null,

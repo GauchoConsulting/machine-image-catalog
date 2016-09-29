@@ -4,9 +4,14 @@ variable "region" {
   default     = "eu-west-1"
 }
 
-variable "bucket_name" {
+variable "vmie_bucket_name" {
   type        = "string"
   description = "S3 bucket to use for the VM import/export service"
+}
+
+variable "vagrant_bucket_name" {
+  type        = "string"
+  description = "S3 bucket to upload vagrant images to"
 }
 
 provider "aws" {
@@ -14,12 +19,22 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "vmie" {
-  bucket        = "${var.bucket_name}"
+  bucket        = "${var.vmie_bucket_name}"
   acl           = "private"
   force_destroy = true
 
   tags {
-    Name = "${var.bucket_name}"
+    Name = "${var.vmie_bucket_name}"
+  }
+}
+
+resource "aws_s3_bucket" "vagrant" {
+  bucket        = "${var.vagrant_bucket_name}"
+  acl           = "public-read"
+  force_destroy = true
+
+  tags {
+    Name = "${var.vagrant_bucket_name}"
   }
 }
 
@@ -32,7 +47,7 @@ data "template_file" "vmie" {
   template = "${file("${path.module}/VMIEPolicy.json.tmpl")}"
 
   vars {
-    bucket_name = "${var.bucket_name}"
+    bucket_name = "${var.vmie_bucket_name}"
   }
 }
 
