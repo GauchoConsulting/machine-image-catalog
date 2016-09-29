@@ -1,0 +1,132 @@
+{
+  "builders": [
+    {
+      "headless": "{{ user `headless` }}",
+      "name": "{{ user `virtualbox_identifier` }}",
+      "output_directory": "builds/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/",
+      "shutdown_command": "/sbin/halt -h -p",
+      "source_path": "{{ user `virtualbox_source_package_path` }}",
+      "ssh_password": "{{ user `password` }}",
+      "ssh_username": "{{ user `username` }}",
+      "ssh_wait_timeout": "10000s",
+      "type": "virtualbox-ovf",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{ .Name }}",
+          "--memory",
+          "{{ user `memory_size` }}"
+        ],
+        [
+          "storagectl",
+          "{{ .Name }}",
+          "--name",
+          "SATA Controller",
+          "--hostiocache",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--ioapic",
+          "off"
+        ]
+      ],
+      "vm_name": "{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+    },
+    {
+      "headless": "{{ user `headless` }}",
+      "name": "{{ user `aws_identifier` }}",
+      "output_directory": "builds/{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/",
+      "shutdown_command": "/sbin/halt -h -p",
+      "source_path": "{{ user `virtualbox_source_package_path` }}",
+      "ssh_password": "{{ user `password` }}",
+      "ssh_username": "{{ user `username` }}",
+      "ssh_wait_timeout": "10000s",
+      "type": "virtualbox-ovf",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{ .Name }}",
+          "--memory",
+          "{{ user `memory_size` }}"
+        ],
+        [
+          "storagectl",
+          "{{ .Name }}",
+          "--name",
+          "SATA Controller",
+          "--hostiocache",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--ioapic",
+          "off"
+        ]
+      ],
+      "vm_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+    }
+  ],
+  "post-processors": [
+    {
+      "keep_input_artifact": true,
+      "only": [
+        "{{ user `virtualbox_identifier` }}"
+      ],
+      "output": "builds/{{ user `group_id` }}.vagrant.{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}.box",
+      "type": "vagrant"
+    },
+    
+  ],
+  "provisioners": [
+    {
+      "only": [
+        "{{ user `aws_identifier` }}"
+      ],
+      "remote_folder": "~/",
+      "scripts": [
+        "scripts/aws.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "only": [
+        "{{ user `virtualbox_identifier` }}"
+      ],
+      "remote_folder": "~/",
+      "scripts": [
+        "scripts/virtualbox-additions.sh",
+        "scripts/vagrant.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "remote_folder": "~/",
+      "scripts": [
+        "scripts/lock-down-root.sh",
+        "scripts/cleanup.sh",
+        "scripts/zero.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "artifact_id": null,
+    "aws_identifier": "aws",
+    "aws_vmimport_bucket_name": "gaucho-image-bucket",
+    "disk_size": null,
+    "group_id": null,
+    "headless": null,
+    "incremental_version": null,
+    "major_version": null,
+    "memory_size": "4096",
+    "minor_version": null,
+    "password": null,
+    "patch_version": null,
+    "username": null,
+    "virtualbox_identifier": "virtualbox",
+    "virtualbox_source_package_path": null
+  }
+}
