@@ -78,14 +78,16 @@
           "{{ user `virtualbox_identifier` }}"
         ],
         "output": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/vagrant/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}.box",
-        "type": "vagrant"
+        "type": "vagrant",
+        "vagrantfile_template": "boxes/membrane/vagrantfile_template"
       },
       {
         "acl": "authenticated-read",
+        "box_description": "built_from: {{ user `source_group_id` }}.{{ user `source_artifact_id` }}-{{ user `source_version` }}",
         "box_dir": "boxes",
-        "box_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}",
+        "box_name": "{{ user `group_id` }}.{{ user `artifact_id` }}",
         "bucket": "{{ user `aws_vagrant_bucket_name` }}",
-        "manifest": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}",
+        "manifest": "{{ user `group_id` }}.{{ user `artifact_id` }}",
         "only": [
           "{{ user `virtualbox_identifier` }}"
         ],
@@ -97,8 +99,10 @@
     {
       "environment_vars": [
         "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
-        "username=vagrant",
-        "password=vagrant"
+        "username=cloud-user",
+        "artifact_id={{ user `artifact_id` }}",
+        "group_id={{ user `group_id` }}",
+        "version={{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
       ],
       "only": [
         "{{ user `virtualbox_identifier` }}"
@@ -110,18 +114,24 @@
     },
     [
       {
-        "ami_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "ami_name": "{{ user `group_id` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
         "only": [
           "{{ user `aws_identifier` }}"
         ],
         "region": "{{ user `aws_region` }}",
         "s3_bucket_name": "{{ user `aws_vmimport_bucket_name` }}",
-        "s3_key_name": "{{ user `group_id` }}.{{ user `aws_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "s3_key_name": "{{ user `group_id` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "tags": {
+          "description": "built_from: {{ user `source_group_id` }}.{{ user `source_artifact_id` }}-{{ user `source_version` }}"
+        },
         "type": "amazon-import"
       },
       {
         "environment_vars": [
-          "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json"
+          "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
+          "artifact_id={{ user `artifact_id` }}",
+          "group_id={{ user `artifact_id` }}",
+          "version={{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
         ],
         "only": [
           "{{ user `aws_identifier` }}"
@@ -180,6 +190,9 @@
     "minor_version": null,
     "password": null,
     "patch_version": null,
+    "source_artifact_id": null,
+    "source_group_id": null,
+    "source_version": null,
     "username": null,
     "virtualbox_identifier": "virtualbox",
     "virtualbox_source_package_path": null

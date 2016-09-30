@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
-groupadd "vagrant"
-useradd -d "/home/vagrant" -s "/bin/bash" -m -g "vagrant" -G wheel "vagrant"
+groupadd "cloud-user"
+useradd -d "/home/cloud-user" -s "/bin/bash" -m -g "cloud-user" -G wheel "cloud-user"
 
-mkdir "/home/vagrant/.ssh"
-chmod 700 "/home/vagrant/.ssh"
-wget -q --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O "/home/vagrant/.ssh/authorized_keys"
-chown -R vagrant:vagrant "/home/vagrant/.ssh"
+mkdir "/home/cloud-user/.ssh"
+chmod 700 "/home/cloud-user/.ssh"
+wget -q --no-check-certificate 'https://raw.github.com/mitchellh/vagrant/master/keys/vagrant.pub' -O "/home/cloud-user/.ssh/authorized_keys"
+chown -R cloud-user:cloud-user "/home/cloud-user/.ssh"
 
 echo "root:vagrant" | chpasswd
-echo "vagrant:vagrant" | chpasswd
+echo "cloud-user:vagrant" | chpasswd
 
 sed -i "s/^.*requiretty/#Defaults requiretty/" /etc/sudoers
 sed -i "s/^\(.*env_keep = \"\)/\1PATH /" /etc/sudoers
 
-echo "vagrant        ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/vagrant
+echo "cloud-user        ALL=(ALL)       NOPASSWD: ALL" > /etc/sudoers.d/vagrant
 chmod 0440 /etc/sudoers.d/vagrant

@@ -1,5 +1,7 @@
 {
-  "artifact_id": "centos6-foundation",
+  "artifact_id": "centos6-membrane",
+  "aws_vagrant_bucket_name": "pervenche-vagrant-bucket",
+  "aws_vmimport_bucket_name": "pervenche-vmie-bucket",
   "disk_size": "61440",
   "group_id": "com.pervenche.cloud",
   "headless": "false",

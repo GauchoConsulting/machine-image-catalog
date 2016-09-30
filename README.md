@@ -49,11 +49,20 @@ $ ROOT_PASSWORD="$(openssl rand -base64 32)" BOOTLOADER_PASSWORD="$(openssl rand
 To build the membrane image execute the following commands from the root of the repository:
 
 ```shell
-$ packer build -var-file boxes/membrane/staging-variables.json -var-file builds/com.pervenche.cloud/centos6-foundation/0.0.1.0/variables.json -force -parallel=false boxes/membrane/packer.json
+$ packer build -force -parallel=false -var-file boxes/membrane/variables.json -var-file builds/com.pervenche.cloud/centos6-foundation/0.0.1.0/variables.json boxes/membrane/packer.json
+```
+
+# Building the Base Image
+
+To build the base image execute the following command from the root of the repository:
+
+```shell
+$ packer build -force -var-file boxes/base/variables.json -var-file builds/com.pervenche.cloud/centos6-membrane/0.0.3.0/variables.json boxes/base/packer.json 
 ```
 
 # Importing the Vagrant Image
 
 ```shell
 $ vagrant box add s3://pervenche-vagrant-bucket/com.pervenche.cloud.aws.centos6-membrane
+$ vagrant box add s3://pervenche-vagrant-bucket/com.pervenche.cloud.aws.centos6-base
 ```

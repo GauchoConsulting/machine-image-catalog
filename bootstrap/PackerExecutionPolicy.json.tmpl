@@ -1,0 +1,77 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "ec2:Describe*",
+        "ec2:CreateKeyPair",
+        "ec2:DeleteKeyPair",
+        "ec2:CreateImage",
+        "ec2:DescribeKeyPairs",
+        "ec2:CreateSecurityGroup",
+        "iam:GetInstanceProfiles",
+        "iam:ListInstanceProfiles",
+        "ec2:CreateTags"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "iam:PassRole"
+      ],
+      "Effect": "Allow",
+      "Resource": "arn:aws:iam::${accountid}:role/${role}"
+    },
+    {
+      "Action": [
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "ec2:RebootInstances",
+        "ec2:TerminateInstances",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:GetPasswordData",
+        "ec2:AttachVolume",
+        "ec2:DetachVolume",
+        "ec2:CreateSnapshot",
+        "ec2:DeleteSnaphot",
+        "ec2:AuthorizeSecurityGroup*",
+        "ec2:RevokeSecurityGroup*"
+      ],
+      "Condition": {
+        "StringEquals": {
+          "ec2:InstanceProfile": "arn:aws:iam::${accountid}:instance-profile/${role}"
+        }
+      },
+      "Effect": "Allow",
+      "Resource": "arn:aws:ec2:eu-west-1:${accountid}:instance/*"
+    },
+    {
+      "Action": "ec2:RunInstances",
+      "Condition": {
+        "StringEquals": {
+          "ec2:InstanceProfile": "arn:aws:iam::${accountid}:instance-profile/${role}"
+        }
+      },
+      "Effect": "Allow",
+      "Resource": "arn:aws:ec2:eu-west-1:${accountid}:instance/*"
+    },
+    {
+      "Action": "ec2:RunInstances",
+      "Effect": "Allow",
+      "Resource": "arn:aws:ec2:eu-west-1:${accountid}:subnet/*"
+    },
+    {
+      "Action": "ec2:RunInstances",
+      "Effect": "Allow",
+      "Resource": [
+        "arn:aws:ec2:eu-west-1:${accountid}:volume/*",
+        "arn:aws:ec2:eu-west-1::image/*",
+        "arn:aws:ec2:eu-west-1::snapshot/*",
+        "arn:aws:ec2:eu-west-1:${accountid}:network-interface/*",
+        "arn:aws:ec2:eu-west-1:${accountid}:key-pair/*",
+        "arn:aws:ec2:eu-west-1:${accountid}:security-group/*"
+      ]
+    }
+  ]
+}

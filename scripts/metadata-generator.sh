@@ -26,6 +26,18 @@ if ! [ -z "${password+x}" ]; then
     output="${output},\"password\":\"${password}\""
 fi
 
+if ! [ -z "${artifact_id+x}" ]; then
+    output="${output},\"source_artifact_id\":\"${artifact_id}\""
+fi
+
+if ! [ -z "${group_id+x}" ]; then
+    output="${output},\"source_group_id\":\"${group_id}\""
+fi
+
+if ! [ -z "${version+x}" ]; then
+    output="${output},\"source_version\":\"${version}\""
+fi
+
 output="{${output}}"
 
 echo "${input}" "${output}" | jq -r add -s > "${OUTPUT_FILE}"
