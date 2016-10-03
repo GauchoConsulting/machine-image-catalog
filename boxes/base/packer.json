@@ -124,6 +124,7 @@
     {
       "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "scripts": [
+        "boxes/base/scripts/packages.sh",
         "scripts/update.sh"
       ],
       "type": "shell"
