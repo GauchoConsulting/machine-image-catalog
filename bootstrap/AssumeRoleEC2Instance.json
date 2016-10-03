@@ -2,14 +2,9 @@
   "Statement": [
     {
       "Action": "sts:AssumeRole",
-      "Condition": {
-        "StringEquals": {
-          "sts:ExternalId": "vmimport"
-        }
-      },
       "Effect": "Allow",
       "Principal": {
-        "Service": "vmie.amazonaws.com"
+        "Service": "ec2.amazonaws.com"
       }
     }
   ],

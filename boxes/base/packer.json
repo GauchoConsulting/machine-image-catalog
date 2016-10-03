@@ -1,0 +1,171 @@
+{
+  "builders": [
+    {
+      "headless": "{{ user `headless` }}",
+      "name": "{{ user `virtualbox_identifier` }}",
+      "output_directory": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `virtualbox_identifier` }}",
+      "shutdown_command": "sudo -S /sbin/halt -h -p",
+      "source_path": "{{ user `virtualbox_source_package_path` }}",
+      "ssh_private_key_file": "vagrant.key",
+      "ssh_username": "{{ user `username` }}",
+      "ssh_wait_timeout": "10000s",
+      "type": "virtualbox-ovf",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{ .Name }}",
+          "--memory",
+          "{{ user `memory_size` }}"
+        ],
+        [
+          "storagectl",
+          "{{ .Name }}",
+          "--name",
+          "SATA Controller",
+          "--hostiocache",
+          "on"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--ioapic",
+          "off"
+        ]
+      ],
+      "vm_name": "{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+    },
+    {
+      "ami_block_device_mappings": [
+        {
+          "delete_on_termination": true,
+          "device_name": "/dev/sda1"
+        }
+      ],
+      "ami_name": "{{ user `group_id` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+      "ebs_optimized": true,
+      "force_deregister": true,
+      "iam_instance_profile": "eu-west-1-inflight_packer_run",
+      "instance_type": "m4.large",
+      "name": "{{ user `aws_identifier` }}",
+      "region": "{{ user `aws_region` }}",
+      "run_tags": {
+        "Name": "{{ user `group_id` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "created-by": "packer",
+        "description": "built_from: {{ user `source_group_id` }}.{{ user `source_artifact_id` }}-{{ user `source_version` }}"
+      },
+      "run_volume_tags": {
+        "Name": "{{ user `group_id` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}",
+        "created-by": "packer",
+        "description": "built_from: {{ user `source_group_id` }}.{{ user `source_artifact_id` }}-{{ user `source_version` }}"
+      },
+      "source_ami": "{{ user `aws_ami_id` }}",
+      "ssh_username": "cloud-user",
+      "type": "amazon-ebs"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "keep_input_artifact": true,
+        "only": [
+          "{{ user `virtualbox_identifier` }}"
+        ],
+        "output": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/vagrant/{{ user `group_id` }}.{{ user `virtualbox_identifier` }}.{{ user `artifact_id` }}-{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}.box",
+        "type": "vagrant"
+      },
+      {
+        "acl": "authenticated-read",
+        "box_description": "built_from: {{ user `source_group_id` }}.{{ user `source_artifact_id` }}-{{ user `source_version` }}",
+        "box_dir": "boxes",
+        "box_name": "{{ user `group_id` }}.{{ user `artifact_id` }}",
+        "bucket": "{{ user `aws_vagrant_bucket_name` }}",
+        "manifest": "{{ user `group_id` }}.{{ user `artifact_id` }}",
+        "only": [
+          "{{ user `virtualbox_identifier` }}"
+        ],
+        "region": "{{ user `aws_region` }}",
+        "type": "vagrant-s3",
+        "version": "{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+      }
+    ],
+    {
+      "environment_vars": [
+        "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
+        "username=cloud-user",
+        "artifact_id={{ user `artifact_id` }}",
+        "group_id={{ user `group_id` }}",
+        "version={{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+      ],
+      "only": [
+        "{{ user `virtualbox_identifier` }}"
+      ],
+      "scripts": [
+        "scripts/metadata-generator.sh"
+      ],
+      "type": "shell-local"
+    },
+    {
+      "environment_vars": [
+        "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
+        "artifact_id={{ user `artifact_id` }}",
+        "group_id={{ user `artifact_id` }}",
+        "version={{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
+      ],
+      "only": [
+        "{{ user `aws_identifier` }}"
+      ],
+      "scripts": [
+        "scripts/metadata-generator.sh"
+      ],
+      "type": "shell-local"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "scripts": [
+        "boxes/base/scripts/packages.sh",
+        "scripts/update.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "scripts": [
+        "scripts/lock-down-root.sh",
+        "scripts/cleanup.sh"
+      ],
+      "type": "shell"
+    },
+    {
+      "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
+      "only": [
+        "{{ user `virtualbox_identifier` }}"
+      ],
+      "scripts": [
+        "scripts/zero.sh"
+      ],
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "artifact_id": null,
+    "aws_identifier": "aws",
+    "aws_region": null,
+    "aws_vagrant_bucket_name": null,
+    "disk_size": null,
+    "group_id": null,
+    "headless": null,
+    "incremental_version": null,
+    "major_version": null,
+    "memory_size": "4096",
+    "minor_version": null,
+    "patch_version": null,
+    "source_artifact_id": null,
+    "source_group_id": null,
+    "source_version": null,
+    "username": null,
+    "virtualbox_identifier": "virtualbox",
+    "virtualbox_source_package_path": null
+  }
+}

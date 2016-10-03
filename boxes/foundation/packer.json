@@ -16,7 +16,7 @@
         "{{ user `iso_url` }}"
       ],
       "name": "{{ user `virtualbox_identifier` }}",
-      "output_directory": "builds/{{ user `group_id` }}/{{ user `virtualbox_identifier` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/",
+      "output_directory": "builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/{{ user `virtualbox_identifier` }}",
       "shutdown_command": "/sbin/halt -h -p",
       "ssh_password": "{{ user `password` }}",
       "ssh_username": "{{ user `username` }}",
@@ -50,9 +50,12 @@
   "post-processors": [
     {
       "environment_vars": [
-        "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `virtualbox_identifier` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
+        "OUTPUT_FILE=builds/{{ user `group_id` }}/{{ user `artifact_id` }}/{{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}/variables.json",
         "username={{ user `username`}}",
-        "password={{ user `password` }}"
+        "password={{ user `password` }}",
+        "artifact_id={{ user `artifact_id` }}",
+        "group_id={{ user `group_id` }}",
+        "version={{ user `major_version` }}.{{ user `minor_version` }}.{{ user `patch_version` }}.{{ user `incremental_version` }}"
       ],
       "scripts": [
         "scripts/metadata-generator.sh"
