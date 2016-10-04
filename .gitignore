@@ -11,3 +11,5 @@ builds/
 merged-variables.json
 
 terraform.tfstate
+
+Berksfile.lock
