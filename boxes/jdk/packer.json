@@ -122,12 +122,52 @@
   ],
   "provisioners": [
     {
+      "command": "berks vendor -b boxes/jdk/provisioners/chef/Berksfile boxes/jdk/provisioners/chef/cookbooks",
+      "type": "shell-local"
+    },
+    {
       "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
       "scripts": [
         "scripts/update.sh",
         "boxes/base/scripts/packages.sh"
       ],
       "type": "shell"
+    },
+    {
+      "cookbook_paths": "boxes/jdk/provisioners/chef/cookbooks",
+      "json": {
+        "java": {
+          "default": false,
+          "install_flavor": "oracle",
+          "jdk_version": "7",
+          "oracle": {
+            "accept_oracle_download_terms": true
+          }
+        }
+      },
+      "run_list": [
+        "java"
+      ],
+      "skip_install": true,
+      "type": "chef-solo"
+    },
+    {
+      "cookbook_paths": "boxes/jdk/provisioners/chef/cookbooks",
+      "json": {
+        "java": {
+          "default": true,
+          "install_flavor": "oracle",
+          "jdk_version": "8",
+          "oracle": {
+            "accept_oracle_download_terms": true
+          }
+        }
+      },
+      "run_list": [
+        "java"
+      ],
+      "skip_install": true,
+      "type": "chef-solo"
     },
     {
       "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
