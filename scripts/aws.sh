@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2026
 
 yum install -y cloud-init
 
