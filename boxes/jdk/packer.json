@@ -45,7 +45,7 @@
       "ebs_optimized": true,
       "force_deregister": true,
       "iam_instance_profile": "eu-west-1-inflight_packer_run",
-      "instance_type": "m4.large",
+      "instance_type": "t2.micro",
       "name": "{{ user `aws_identifier` }}",
       "region": "{{ user `aws_region` }}",
       "run_tags": {
@@ -179,9 +179,6 @@
     },
     {
       "execute_command": "{{ .Vars }} sudo -E -S sh '{{ .Path }}'",
-      "only": [
-        "{{ user `virtualbox_identifier` }}"
-      ],
       "scripts": [
         "scripts/zero.sh"
       ],
