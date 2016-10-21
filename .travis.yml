@@ -1,0 +1,19 @@
+language: python
+
+sudo: false
+
+addons:
+  apt:
+    sources:
+    - debian-sid
+    packages:
+    - shellcheck
+
+install:
+  - pip install six requests
+  - git clone --depth 1 --branch r1.99.64-1 git://github.com/rhinstaller/pykickstart.git
+  - (cd pykickstart && pip install pycurl && pip install urlgrabber && pip install .)
+script:
+  - find . -name "ks.cfg" | xargs -I {}  ksvalidator {}
+  - find . -name "*.json" | xargs -I {} sh -c 'cat {} | jq "." > /dev/null'
+  - find . -name "*.sh" | xargs -I {} shellcheck {}

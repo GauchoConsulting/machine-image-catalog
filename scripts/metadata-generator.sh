@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1001,SC2154
 
 set -eu
 
